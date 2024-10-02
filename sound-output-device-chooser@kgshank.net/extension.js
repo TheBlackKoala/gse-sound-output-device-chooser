@@ -3,12 +3,12 @@
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see <http://www.gnu.org/licenses/>.
  * *****************************************************************************
@@ -16,19 +16,32 @@
  ******************************************************************************/
 /* jshint moz:true */
 
-const { GObject, Shell, Meta  } = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Base = Me.imports.base;
-const Lib = Me.imports.convenience;
+import GObject from 'gi://GObject'
+import Shell from 'gi://Shell'
+import Meta from 'gi://Meta'
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+
+import * as base from './base.js';
+import * as Lib from './convenience.js';
 const _d = Lib._log;
 const _dump = Lib.dump;
 const getActor = Lib.getActor;
 const SignalManager = Lib.SignalManager;
-const Prefs = Me.imports.prefs;
-const Main = imports.ui.main;
-const PopupMenu = imports.ui.popupMenu;
-const VolumeMixerPopupMenu = Me.imports.volumeMixerPopupMenu;
+import * as Prefs from './prefs.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import * as VolumeMixerPopupMenu from './volumeMixerPopupMenu.js';
+
+export default class ThisExtension extends Extension.Extension {
+    enable() {
+        this._settings = this.getSettings();
+        console.log(_('This is a translatable text'));
+    }
+
+    disable() {
+        this._settings = null;
+    }
+}
 
 
 var SoundOutputDeviceChooser = class SoundOutputDeviceChooser
@@ -149,7 +162,7 @@ var SDCInstance = class SDCInstance {
         this._aggregateLayout = this._aggregateMenu.menu.box.get_layout_manager();
         let theme = imports.gi.Gtk.IconTheme.get_default();
         if (theme != null) {
-            let iconPath = Me.dir.get_child('icons');
+            let iconPath = ThisExtension.path + 'icons';
             if (iconPath != null && iconPath.query_exists(null)) {
                 theme.append_search_path(iconPath.get_path());
             }
@@ -167,7 +180,7 @@ var SDCInstance = class SDCInstance {
         }
 
         if (this._volumeMixerInstance == null) {
-            this._volumeMixerInstance = new VolumeMixerPopupMenu.VolumeMixerPopupMenuInstance();            
+            this._volumeMixerInstance = new VolumeMixerPopupMenu.VolumeMixerPopupMenuInstance();
             this._aggregateMenu._volume.menu.addMenuItem(this._volumeMixerInstance);
 
         // create keybindings
@@ -206,8 +219,8 @@ var SDCInstance = class SDCInstance {
 
     /**
      * cycle direction = 1 for forward, -1 for backward
-    */ 
-    cycleDevice(InputOutputInstance, direction) {
+    */
+    cycleDevice(InputOutputInstance, direction){
         try {
             let devices = InputOutputInstance._getAvailableDevices();
             if (devices.length <= 1) {
@@ -341,6 +354,6 @@ var SDCInstance = class SDCInstance {
 };
 
 function init() {
-    ExtensionUtils.initTranslations(Me.metadata["gettext-domain"]);
+    ExtensionUtils.initTranslations(ThisExtension.metadata["gettext-domain"]);
     return new SDCInstance();
 }

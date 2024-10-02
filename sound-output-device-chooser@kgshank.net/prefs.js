@@ -16,16 +16,17 @@
  ******************************************************************************/
 /* jshint moz:true */
 
-const { Gio, GObject, Gtk } = imports.gi;
+import Gio from 'gi://Gio';
+import GObject from 'gi://GObject';
+import Gtk from 'gi://Gtk';
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const Lib = Me.imports.convenience;
+import ThisExtension as Me from './extension.js'
+import * as Lib from './convenience.js';
 const _d = Lib._log;
 const SignalManager = Lib.SignalManager;
 
 const Gettext = imports.gettext;
-const _ = Gettext.gettext;
+import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 var HIDE_ON_SINGLE_DEVICE = "hide-on-single-device";
 var HIDE_MENU_ICONS = "hide-menu-icons";
@@ -52,7 +53,7 @@ var DISPLAY_OPTIONS = { SHOW_ALWAYS: 1, HIDE_ALWAYS: 2, DEFAULT: 3, INITIAL: -1 
 const PORT_SETTINGS_VERSION = 3;
 
 function init() {
-    ExtensionUtils.initTranslations();
+    Me.initTranslations();
 }
 
 function getPortsFromSettings(_settings) {
@@ -142,7 +143,7 @@ const SDCSettingsWidget = new GObject.Class({
             this.__showFn = this.show_all;
         }
         // creates the settings
-        this._settings = ExtensionUtils.getSettings();
+        this._settings = Me.getSettings();
 
         Lib.setLog(this._settings.get_boolean(ENABLE_LOG));
 

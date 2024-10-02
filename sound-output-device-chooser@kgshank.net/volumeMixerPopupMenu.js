@@ -1,20 +1,22 @@
-/* 
+/*
  * Original Author: Brendan Early (https://github.com/mymindstorm/gnome-volume-mixer)
  * Modified by Burak Sener
  */
 
-const { Settings, SettingsSchemaSource } = imports.gi.Gio;
-const { MixerSinkInput } = imports.gi.Gvc;
-const { Gio, GLib } = imports.gi;
+import { Settings, SettingsSchemaSource } from 'gi://Gio';
+import { MixerSinkInput } from 'gi://Gvc';
+import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+
 
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/popupMenu.js
-const PopupMenu = imports.ui.popupMenu;
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 // https://gitlab.gnome.org/GNOME/gnome-shell/-/blob/main/js/ui/status/volume.js
-const Volume = imports.ui.status.volume;
+import * as Volume from 'resource:///org/gnome/shell/ui/status/volume.js';
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Lib = Me.imports.convenience;
-const Prefs = Me.imports.prefs;
+import * as Lib from './convenience.js';
+import * as Prefs from './prefs.js';
 
 var VolumeMixerPopupMenuInstance = class VolumeMixerPopupMenuInstance extends PopupMenu.PopupMenuSection {
     constructor() {

@@ -3,12 +3,12 @@
  * the terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
  * details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with
  * this program. If not, see http://www.gnu.org/licenses/.
  * *****************************************************************************
@@ -16,27 +16,27 @@
  ******************************************************************************/
 /* jshint moz:true */
 
-const { GObject, GLib, Gvc } = imports.gi;
+import GObject from 'gi://GObject'
+import GLib from 'gi://GLib'
+import Gvc from 'gi://Gvc'
 
 const Signals = imports.signals;
 
-const PopupMenu = imports.ui.popupMenu;
-const VolumeMenu = imports.ui.status.volume;
-const Main = imports.ui.main;
-const MessageTray = imports.ui.messageTray;
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import * as VolumeMenu from 'resource:///org/gnome/shell/ui/status/volume.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 
-const Config = imports.misc.config;
-const ExtensionUtils = imports.misc.extensionUtils;
-const Gettext = imports.gettext;
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
+import {gettext as Gettext} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-const Me = ExtensionUtils.getCurrentExtension();
-const Lib = Me.imports.convenience;
-const Prefs = Me.imports.prefs;
+import ThisExtension as Me from './extension.js'
+import * as Lib from './convenience.js';
+import * as Prefs from './prefs.js';
 
-ExtensionUtils.initTranslations(Me.metadata["gettext-domain"]);
+Me.initTranslations(Me.metadata["gettext-domain"]);
 const Domain = Gettext.domain(Me.metadata["gettext-domain"]);
 const _ = Domain.gettext;
-//const _ = Gettext.gettext;
 const _d = Lib._log;
 const getActor = Lib.getActor;
 
@@ -44,21 +44,21 @@ const DISPLAY_OPTIONS = Prefs.DISPLAY_OPTIONS;
 const SignalManager = Lib.SignalManager;
 const isShellAbove34 = (parseFloat(Config.PACKAGE_VERSION) >= 3.34);
 
-var ProfileMenuItem40 = class 
-    extends PopupMenu.PopupMenuItem {
-	_init(title, profileName) {
+var ProfileMenuItem40 = class
+extends PopupMenu.PopupMenuItem {
+    _init(title, profileName) {
         if (super._init) {
             super._init(title);
         }
-        _d("ProfileMenuItem: _init:" + title); 
-        this._initialise(profileName);       
+        _d("ProfileMenuItem: _init:" + title);
+        this._initialise(profileName);
     }
-    
+
     _initialise(profileName) {
-		this.profileName = profileName;
+	this.profileName = profileName;
         this._ornamentLabel.set_style("min-width: 3em;margin-left: 3em;");
         this.setProfileActive(false);
-	}
+    }
 
     setProfileActive(active) {
         if (active) {
@@ -89,16 +89,16 @@ var ProfileMenuItem40 = class
 }
 
 var ProfileMenuItem32 = class 
-    extends ProfileMenuItem40 {
-	constructor(title, profileName){
-		_d("ProfileMenuItem: constructor:" + title);
-		super(title);
-		this._initialise(profileName);		
-	}
+extends ProfileMenuItem40 {
+    constructor(title, profileName){
+	_d("ProfileMenuItem: constructor:" + title);
+	super(title);
+	this._initialise(profileName);		
+    }
 }
 
 var SoundDeviceMenuItem40 = class extends PopupMenu.PopupImageMenuItem {
-	_init(id, title, icon_name, profiles) {
+    _init(id, title, icon_name, profiles) {
         if (super._init) {
             super._init(title, icon_name);
         }
@@ -205,18 +205,18 @@ var SoundDeviceMenuItem40 = class extends PopupMenu.PopupImageMenuItem {
 }
 
 var SoundDeviceMenuItem32 = class extends SoundDeviceMenuItem40 {
-	constructor(id, title, icon_name, profiles) {
+    constructor(id, title, icon_name, profiles) {
         _d("SoundDeviceMenuItem: constructor:" + title);
        	super(title, icon_name);
-		this._initialise(id, title, icon_name, profiles);        
- 	}
+	this._initialise(id, title, icon_name, profiles);        
+    }
 }
 
 var SoundDeviceMenuItem;
 var ProfileMenuItem;
 if (isShellAbove34) {
-	SoundDeviceMenuItem = SoundDeviceMenuItem40;
-	ProfileMenuItem = ProfileMenuItem40;
+    SoundDeviceMenuItem = SoundDeviceMenuItem40;
+    ProfileMenuItem = ProfileMenuItem40;
     ProfileMenuItem = GObject.registerClass({ GTypeName: 'ProfileMenuItem' }, ProfileMenuItem);
 
     SoundDeviceMenuItem = GObject.registerClass({
@@ -233,8 +233,8 @@ if (isShellAbove34) {
 }
 else
 {
-	SoundDeviceMenuItem = SoundDeviceMenuItem32;
-	ProfileMenuItem = ProfileMenuItem32;
+    SoundDeviceMenuItem = SoundDeviceMenuItem32;
+    ProfileMenuItem = ProfileMenuItem32;
 }
 
 var SoundDeviceChooserBase = class SoundDeviceChooserBase {
@@ -244,7 +244,7 @@ var SoundDeviceChooserBase = class SoundDeviceChooserBase {
         this.deviceType = deviceType;
         this._devices = new Map();
         let _control = this._getMixerControl();
-        this._settings = ExtensionUtils.getSettings();
+        this._settings = Me.getSettings();
         _d("Constructor:" + deviceType);
 
         this._setLog();
@@ -404,19 +404,19 @@ var SoundDeviceChooserBase = class SoundDeviceChooserBase {
         if (obj && obj.isAvailable()) {
             _d("Removed: " + id + ":" + obj.title);
             /*
-            let uidevice = this.lookupDeviceById(control,id);
-            if (!dontcheck && this._canShowDevice(control, uidevice, obj, false)) {
-                _d('Device removed, but not hiding as its set to be shown always');
-                return;
-            }*/
+              let uidevice = this.lookupDeviceById(control,id);
+              if (!dontcheck && this._canShowDevice(control, uidevice, obj, false)) {
+              _d('Device removed, but not hiding as its set to be shown always');
+              return;
+              }*/
             obj.setVisibility(false);
             obj.setAvailable(false);
 
             /*
-            if (this.deviceRemovedTimout) {
-                GLib.source_remove(this.deviceRemovedTimout);
-                this.deviceRemovedTimout = null;
-            }
+              if (this.deviceRemovedTimout) {
+              GLib.source_remove(this.deviceRemovedTimout);
+              this.deviceRemovedTimout = null;
+              }
             */
             /**
              * If the active uidevice is removed, then need to activate the
@@ -425,18 +425,18 @@ var SoundDeviceChooserBase = class SoundDeviceChooserBase {
              * activated. So, lets wait for sometime before activating.
              */
             /* THIS MAY NOT BE NEEDED AS SHELL SEEMS TO ACTIVATE NEXT DEVICE
-           this.deviceRemovedTimout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, function() {
+               this.deviceRemovedTimout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1500, function() {
                _d("Device Removed timeout");
                if (obj === this._activeDevice) {
-                   let device = Object.keys(this._devices).map((id) => this._devices[id]).find(({active}) => active === true);
-                   if(device){
-                       this._changeDeviceBase(device.id, this._getMixerControl());
-                   }                    
+               let device = Object.keys(this._devices).map((id) => this._devices[id]).find(({active}) => active === true);
+               if(device){
+               this._changeDeviceBase(device.id, this._getMixerControl());
+               }                    
                }
                this.deviceRemovedTimout = null;
                return false;
-           }.bind(this));
-           */
+               }.bind(this));
+            */
             this._setChooserVisibility();
             this._setVisibility();
         }
@@ -466,10 +466,10 @@ var SoundDeviceChooserBase = class SoundDeviceChooserBase {
 
                 if (device) {
                     _notify(Me.metadata["name"] + " " + _("Extension changed active sound device."),
-                        _("Activated device is hidden in Port Settings.") + " \n" +
-                        _("Deactivated Device: ") + obj.title + " \n" + _("Activated Device: ") + device.title + " \n"
-                        + _("Disable in extension preferences to avoid this behaviour."),
-                        device.icon_name);
+                            _("Activated device is hidden in Port Settings.") + " \n" +
+                            _("Deactivated Device: ") + obj.title + " \n" + _("Activated Device: ") + device.title + " \n"
+                            + _("Disable in extension preferences to avoid this behaviour."),
+                            device.icon_name);
                     this._changeDeviceBase(device.id, control);
                 }
                 else {
@@ -596,13 +596,13 @@ var SoundDeviceChooserBase = class SoundDeviceChooserBase {
     _getIcon(name) {
         let iconsType = this._settings.get_string(Prefs.ICON_THEME);
         switch (iconsType) {
-            case Prefs.ICON_THEME_COLORED:
-                return name;
-            case Prefs.ICON_THEME_MONOCHROME:
-                return name + "-symbolic";
-            default:
-                //return "none";
-                return null;
+        case Prefs.ICON_THEME_COLORED:
+            return name;
+        case Prefs.ICON_THEME_MONOCHROME:
+            return name + "-symbolic";
+        default:
+            //return "none";
+            return null;
         }
     }
 
@@ -653,10 +653,10 @@ var SoundDeviceChooserBase = class SoundDeviceChooserBase {
             _d("P:" + uidevice.port_name + "==" + uidevice.description + "==" + cardName + "==" + uidevice.origin);
 
             let matchedPort = this._portsSettings.find(port => (port
-                && port.name == uidevice.port_name
-                && port.human_name == uidevice.description
-                && (!cardName || port.card_name == cardName)
-                && (cardName || port.card_description == uidevice.origin)));
+                                                                && port.name == uidevice.port_name
+                                                                && port.human_name == uidevice.description
+                                                                && (!cardName || port.card_name == cardName)
+                                                                && (cardName || port.card_description == uidevice.origin)));
 
             if (matchedPort) {
                 displayOption = matchedPort.display_option;

@@ -17,11 +17,11 @@
 /* jshint moz:true */
 
 const ByteArray = imports.byteArray;
-const { Gio, GLib } = imports.gi;
-const ExtensionUtils = imports.misc.extensionUtils;
+import Gio from 'gi://Gio'
+import GLib from 'gi://GLib'
+import ThisExtension as Me from './extension.js'
 
-const Me = ExtensionUtils.getCurrentExtension();
-const Prefs = Me.imports.prefs;
+import * as Prefs from './prefs.js';
 
 var DEBUG = false;
 
@@ -115,7 +115,7 @@ function isCmdFound(cmd) {
 function refreshCards() {
     cards = {};
     ports = [];
-    let _settings = ExtensionUtils.getSettings();
+    let _settings = Me.getSettings();
     let error = false;
     let newProfLogic = _settings.get_boolean(Prefs.NEW_PROFILE_ID_DEPRECATED);
 
@@ -130,7 +130,7 @@ function refreshCards() {
 
     if (newProfLogic) {
         _log("New logic");
-        let pyLocation = Me.dir.get_child("utils/pa_helper.py").get_path();
+        let pyLocation = Me.path + "utils/pa_helper.py";
         let pythonExec = ["python", "python3", "python2"].find(cmd => isCmdFound(cmd));
         if (!pythonExec) {
             _log("ERROR: Python not found. fallback to default mode");
