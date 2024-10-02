@@ -27,14 +27,6 @@ Enable the extensions from [GNOME Extensions App](https://gitlab.gnome.org/GNOME
 
 ### Gnome shell versions compatible
 * 46
-* 43
-* 42
-* 41
-* 40
-* 3.38
-* 3.36
-* 3.34
-* 3.32
 * For older versions install from [extensions.gnome.org](https://extensions.gnome.org/extension/906/sound-output-device-chooser/)
 
 
